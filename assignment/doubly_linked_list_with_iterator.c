@@ -90,7 +90,6 @@ void list_release(IntList* p_list) {
 /** The implementation of list data */
 
 bool list_is_valid(IntList list) {
-    //bool isNotValid = ((list == 0) || ((list->size == 0) && (list->head == 0) && (list->tail == 0)));
     return (list != 0);
 }
 
@@ -109,12 +108,21 @@ int list_get_size(IntList list) {
 }
 
 bool list_contains(IntList list, int value) {
-	return true;    
+    if (!list_is_valid(list)) return false;
+
+    Node* node = list->head;
+    for (int i = 0; i < list->size; ++i) {
+        if (node->data == value) {
+            return true;
+        }
+        node = node->next;
+    }
+    return false;    
 }
 
 int list_get_at(IntList list, unsigned int index) {
-    if (!list_is_valid(list)) return -1;
-    if (index >= list->size) return -1;
+    if (!list_is_valid(list)) return 0;
+    if (index >= list->size) return 0;
 
     Node* node = list->head;
     for (int i = 0; i < index; ++i) {
@@ -186,6 +194,32 @@ void list_insert_at(IntList list, unsigned int index, int value) {
 }
 
 void list_append(IntList list, IntList list_to_append) {
+    if (!list_is_valid(list)) return;
+    if (!list_is_valid(list_to_append)) return;
+    if (list_to_append->size == 0) return;
+
+    if (list->size == 0) {
+        list->head = list_to_append->head;
+        list->tail = list_to_append->tail;
+        list->size = list_to_append->size;
+        list_to_append->head = 0;
+        list_to_append->tail = 0;
+        list_to_append->size = 0;
+    }
+    else {
+        Node* tailFirst = list->tail;
+        Node* tailSecond = list_to_append->tail;
+        Node* headSecond = list_to_append->head;
+
+        tailFirst->next = headSecond;
+        headSecond->prev = tailFirst;
+        tailFirst = tailSecond;
+        list->size += list_to_append->size;
+
+        headSecond = 0;
+        tailSecond = 0;
+        list_to_append->size = 0;
+    }
 }
 
 void list_remove(IntList list, int value) {
@@ -255,7 +289,6 @@ void list_clear(IntList list) {
         return;
     }
     if (list->size == 0) {
-       // free_mem(list);
         list = 0;
         return;
     }
@@ -271,30 +304,69 @@ void list_clear(IntList list) {
     list->size = 0;
 }
 /** The implementation of list iterator data */
+typedef struct IntListIteratorData {
+    Node* head;
+    Node* tail;
+    Node* current;
+} IntListIteratorData;
+
 IntListIterator list_it_obtain(IntList list) {
-	return 0;   
-}   
+    if (!list_is_valid(list)) return 0;
+    IntListIterator it = alloc_mem(sizeof(IntListIteratorData));
+
+    if (list->size == 0) {
+        it->head = 0;
+        it->tail = 0;
+        it->current = 0;
+    } else {
+        it->head = list->head;
+        it->current = list->head;
+        it->tail = list->tail;
+    }
+    return it;
+}
 
 void list_it_release(IntListIterator* p_it) {
+    free_mem(*p_it);
 }
 
 bool list_it_is_valid(IntListIterator it) {
-	return true;   
+    if (it != 0) {
+        return it->current != 0;
+    }
+    return false;
 }
 
 bool list_it_next(IntListIterator it) {
-	return true;   
+    if (!list_it_is_valid(it)) return false;
+
+    if (it->current->next != 0) {
+        it->current = it->current->next;
+        return true;
+    }
+    return false;
 }
 
 bool list_it_previous(IntListIterator it) {
-	return true;   
+    if (!list_it_is_valid(it)) return false;
+
+    if (it->current->prev != 0) {
+        it->current = it->current->prev;
+        return true;
+    }
+    return false;
 }
 
 int list_it_get(IntListIterator it) {
-	return 0;   
+    if (!list_it_is_valid(it)) return;
+
+    return it->current->data;
 }
 
 void list_it_set(IntListIterator it, int value) {
+    if (!list_it_is_valid(it)) return;
+
+    it->current->data = value;
 }
 
 

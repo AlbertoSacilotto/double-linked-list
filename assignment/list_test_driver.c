@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 	ADD_TEST(test_list_clear__shall_clear_list_with_one_value);
 	ADD_TEST(test_list_clear__shall_clear_list_with_multiple_values);
 	ADD_TEST(test_list_clear__shall_ingore_invalid_list);
-	/*
+
 	ADD_TEST(test_list_contains__shall_be_false_for_empty_list);
 	ADD_TEST(test_list_contains__shall_be_true_for_one_value);
 	ADD_TEST(test_list_contains__shall_be_true_for_multiple_values);
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 	ADD_TEST(test_list_it_set_get__shall_modify_value);
 	ADD_TEST(test_list_it_get__shall_return_0_for_invalid_iterator);
 	ADD_TEST(test_list_it_set__shall_ignore_call_for_invalid_iterator);
-	*/
+
 	run_tests();
 	return 0;
 }
